@@ -5,6 +5,17 @@ import { getAnalytics } from 'firebase/analytics'
 import { getAuth, User } from 'firebase/auth'
 import { FirebaseApp } from 'firebase/app'
 
+const env = import.meta.env
+const firebaseConfig = {
+  apiKey: env.VITE_apiKey,
+  authDomain: env.VITE_authDomain,
+  databaseURL: env.VITE_databaseURL,
+  projectId: env.VITE_projectId,
+  storageBucket: env.VITE_storageBucket,
+  messagingSenderId: env.VITE_messagingSenderId,
+  appId: env.VITE_appId,
+  measurementId: env.VITE_measurementId,
+}
 class FirebaseAdapter {
   app: FirebaseApp | undefined
 
@@ -25,17 +36,6 @@ class FirebaseAdapter {
   }
 
   initFirestore = async (resolve: (user: User) => void) => {
-    const firebaseConfig = {
-      apiKey: await import.meta.env.VITE_apiKey,
-      authDomain: await import.meta.env.VITE_authDomain,
-      databaseURL: await import.meta.env.VITE_databaseURL,
-      projectId: await import.meta.env.VITE_projectId,
-      storageBucket: await import.meta.env.VITE_storageBucket,
-      messagingSenderId: await import.meta.env.VITE_messagingSenderId,
-      appId: await import.meta.env.VITE_appId,
-      measurementId: await import.meta.env.VITE_measurementId,
-    }
-
     try {
       this.app = initializeApp(firebaseConfig)
       this.auth = getAuth(this.app)

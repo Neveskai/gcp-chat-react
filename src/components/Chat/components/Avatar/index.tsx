@@ -1,4 +1,3 @@
-import React from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 
 type ChatAvatarProps = {
