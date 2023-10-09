@@ -19,7 +19,7 @@ const firebaseConfig = {
 class FirebaseAdapter {
   app: FirebaseApp | undefined
 
-  db: any
+  firestore: any
 
   auth: any
 
@@ -28,7 +28,7 @@ class FirebaseAdapter {
   analytics: any
 
   init = async () => {
-    if (this.db) return Promise.reject(new Error('Firebase not initialized'))
+    if (this.firestore) return Promise.reject(new Error('Firebase not initialized'))
 
     return new Promise((resolve) => {
       this.initFirestore(resolve)
@@ -45,7 +45,7 @@ class FirebaseAdapter {
 
         this.analytics = getAnalytics(this.app)
         this.storage = getStorage()
-        this.db = getFirestore(this.app)
+        this.firestore = getFirestore(this.app)
 
         setTimeout(() => resolve(fbUser), 50)
       })

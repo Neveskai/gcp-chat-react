@@ -59,6 +59,7 @@ function HomePage() {
 
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Chat messages={messages} />
+        <Chat messages={messages} />
       </Box>
     </Container>
   )
