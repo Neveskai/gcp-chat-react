@@ -8,15 +8,10 @@ import { Box, Container, List, Paper, TextField, Typography } from '@mui/materia
 import { listCSS, mainCSS, sendCSS } from './css'
 
 import SendIcon from '@mui/icons-material/Send'
-
-type MessageType = {
-  message: string
-  time: number
-  right?: boolean
-}
+import FirestoreDoc, { MessageType } from '@/modules/firebase/firestoreDoc'
 
 type ChatProps = {
-  messages: MessageType[]
+  doc: string
 }
 
 const today = moment().format('DD/MM/YYYY')
@@ -34,19 +29,24 @@ const getParsedMessages = (messages: MessageType[]) =>
   }, {})
 
 const getDayName = (date: string) => {
-  if (date === today) return 'today'
-  if (date === yesterday) return 'yesterday'
+  if (date === today) return 'hoje'
+  if (date === yesterday) return 'ontem'
 
   return date
 }
 
-function Chat({ messages }: ChatProps) {
+function Chat({ doc }: ChatProps) {
   const [message, setMessage] = React.useState('')
-
+  const [messages, setMessages] = React.useState([])
+  const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc), [])
   const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
 
-  const sendMessage = () => {
-    console.log(message)
+  React.useEffect(() => {
+    firestore.getDocSnapshot(setMessages)
+  }, [])
+
+  const sendMessage = async () => {
+    await firestore.sendMessage(message)
 
     setMessage('')
   }
@@ -58,7 +58,7 @@ function Chat({ messages }: ChatProps) {
   return (
     <Container>
       <Box sx={mainCSS} component={Paper}>
-        <ChatAvatar name='John Wick' image='https://www.svgrepo.com/show/5125/avatar.svg' />
+        <ChatAvatar name='Cliente' image='https://www.svgrepo.com/show/5125/avatar.svg' />
 
         <List sx={listCSS}>
           {Object.keys(parsedMessages).map((key: string) => (

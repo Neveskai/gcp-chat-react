@@ -34,7 +34,7 @@ class Firestore {
     await getDoc(docRef)
   }
 
-  async getDocSnapshot(id: string, callback: () => void) {
+  async getDocSnapshot(id: string, callback: (docs: any) => void) {
     const docRef = this.getDocRef(id)
 
     const unsub = onSnapshot(docRef, callback)

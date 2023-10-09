@@ -1,5 +1,4 @@
 import React from 'react'
-import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { Box, Container } from '@mui/material'
 
@@ -21,31 +20,6 @@ function HomePage() {
     navigate('/')
   }
 
-  const messages = [
-    {
-      message: 'E ai cara, beleza?',
-      time: +moment().add(-1, 'day'),
-    },
-    {
-      message: 'E ai, estou bem e você?',
-      time: +moment().add(-1, 'day').add(1, 'minute'),
-      right: true,
-    },
-    {
-      message: 'legal, tbm tô bem, e as novidades?',
-      time: +moment().add(-1, 'day').add(31, 'minute'),
-    },
-    {
-      message: 'comprei um carro novo',
-      time: +moment(),
-      right: true,
-    },
-    {
-      message: 'legal demais, sei o quanto você queria isso',
-      time: +moment().add(1, 'day').add(1, 'minute'),
-    },
-  ]
-
   return (
     <Container>
       <Box sx={boxCSS}>
@@ -58,8 +32,8 @@ function HomePage() {
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-        <Chat messages={messages} />
-        <Chat messages={messages} />
+        <Chat doc={user?.user?.email as string} />
+        <Chat doc={user?.user?.email as string} />
       </Box>
     </Container>
   )
