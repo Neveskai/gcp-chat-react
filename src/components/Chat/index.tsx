@@ -12,6 +12,7 @@ import FirestoreDoc, { MessageType } from '@/modules/firebase/firestoreDoc'
 
 type ChatProps = {
   doc: string
+  owner: string
 }
 
 const today = moment().format('DD/MM/YYYY')
@@ -35,10 +36,10 @@ const getDayName = (date: string) => {
   return date
 }
 
-function Chat({ doc }: ChatProps) {
+function Chat({ doc, owner }: ChatProps) {
   const [message, setMessage] = React.useState('')
   const [messages, setMessages] = React.useState([])
-  const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc), [])
+  const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc, owner), [])
   const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
 
   React.useEffect(() => {
@@ -58,7 +59,7 @@ function Chat({ doc }: ChatProps) {
   return (
     <Container>
       <Box sx={mainCSS} component={Paper}>
-        <ChatAvatar name='Cliente' image='https://www.svgrepo.com/show/5125/avatar.svg' />
+        <ChatAvatar name={owner} image='https://www.svgrepo.com/show/5125/avatar.svg' />
 
         <List sx={listCSS}>
           {Object.keys(parsedMessages).map((key: string) => (
@@ -70,11 +71,12 @@ function Chat({ doc }: ChatProps) {
                 {getDayName(key)}
               </Typography>
 
-              {parsedMessages[key as keyof typeof parsedMessages].map((message: MessageType) => (
+              {parsedMessages[key as keyof typeof parsedMessages].map((msg: MessageType) => (
                 <Message
-                  {...message}
-                  time={moment(message.time).format('hh:mm')}
-                  key={message.time}
+                  message={msg.message}
+                  right={msg.owner !== owner}
+                  time={moment(msg.time).format('hh:mm')}
+                  key={msg.time}
                 />
               ))}
             </div>

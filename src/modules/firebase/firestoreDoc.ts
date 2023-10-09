@@ -4,19 +4,22 @@ import moment from 'moment'
 export type MessageType = {
   message: string
   time: number
-  right?: boolean
+  owner: string
 }
 
 class FirestoreDoc {
   private doc: string
 
+  private owner: string
+
   private messages: MessageType[] = []
 
   private firestore: Firestore
 
-  constructor(collection: string, doc: string) {
+  constructor(collection: string, doc: string, owner: string) {
     this.firestore = new Firestore(collection)
     this.doc = doc
+    this.owner = owner
   }
 
   async sendMessage(message: string) {
@@ -25,6 +28,7 @@ class FirestoreDoc {
         ...this.messages,
         {
           time: +moment(),
+          owner: this.owner,
           message: message,
         },
       ],

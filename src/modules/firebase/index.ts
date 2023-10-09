@@ -43,8 +43,8 @@ class FirebaseAdapter {
       this.auth.onAuthStateChanged((fbUser: User) => {
         if (!fbUser || !this.app) return false
 
-        this.analytics = getAnalytics(this.app)
         this.storage = getStorage()
+        this.analytics = getAnalytics(this.app)
         this.firestore = getFirestore(this.app)
 
         setTimeout(() => resolve(fbUser), 50)

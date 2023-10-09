@@ -32,8 +32,8 @@ function HomePage() {
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-        <Chat doc={user?.user?.email as string} />
-        <Chat doc={user?.user?.email as string} />
+        <Chat doc={user?.user?.email as string} owner={user?.user?.email as string} />
+        <Chat doc={user?.user?.email as string} owner='Client' />
       </Box>
     </Container>
   )
