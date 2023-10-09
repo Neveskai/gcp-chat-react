@@ -1,14 +1,13 @@
 import React from 'react'
 import moment from 'moment'
-import Button from '@/components/Button'
 import Message from './components/Message'
 import ChatAvatar from './components/Avatar'
 
-import { Box, Container, List, Paper, TextField, Typography } from '@mui/material'
-import { listCSS, mainCSS, sendCSS } from './css'
+import { Box, Container, List, Paper, Typography } from '@mui/material'
+import { listCSS, mainCSS } from './css'
 
-import SendIcon from '@mui/icons-material/Send'
 import FirestoreDoc, { MessageType } from '@/modules/firebase/firestoreDoc'
+import SendMessage from './components/SendMessage'
 
 type ChatProps = {
   doc: string
@@ -37,7 +36,6 @@ const getDayName = (date: string) => {
 }
 
 function Chat({ doc, owner }: ChatProps) {
-  const [message, setMessage] = React.useState('')
   const [messages, setMessages] = React.useState([])
   const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc, owner), [])
   const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
@@ -45,16 +43,6 @@ function Chat({ doc, owner }: ChatProps) {
   React.useEffect(() => {
     firestore.getDocSnapshot(setMessages)
   }, [])
-
-  const sendMessage = async () => {
-    await firestore.sendMessage(message)
-
-    setMessage('')
-  }
-
-  const handleKeys = (e: any) => {
-    if (e.key === 'Enter') return sendMessage()
-  }
 
   return (
     <Container>
@@ -83,17 +71,7 @@ function Chat({ doc, owner }: ChatProps) {
           ))}
         </List>
 
-        <Box sx={sendCSS}>
-          <TextField
-            fullWidth
-            value={message}
-            onChange={(e: any) => setMessage(e.target.value)}
-            onKeyUp={handleKeys}
-          />
-          <Button variant='contained' disabled={!message} onClick={sendMessage}>
-            <SendIcon />
-          </Button>
-        </Box>
+        <SendMessage firestore={firestore} />
       </Box>
     </Container>
   )
