@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check'
 import { getFirestore } from 'firebase/firestore'
 import { FirebaseStorage, getStorage } from 'firebase/storage'
 import { getAnalytics } from 'firebase/analytics'
@@ -18,6 +19,8 @@ const firebaseConfig = {
 }
 class FirebaseAdapter {
   app: FirebaseApp | undefined
+
+  appCheck: any
 
   firestore: any
 
@@ -39,6 +42,10 @@ class FirebaseAdapter {
     try {
       this.app = initializeApp(firebaseConfig)
       this.auth = getAuth(this.app)
+      this.appCheck = initializeAppCheck(this.app, {
+        provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_appChecKey),
+        isTokenAutoRefreshEnabled: true,
+      })
 
       this.auth.onAuthStateChanged((fbUser: User) => {
         if (!fbUser || !this.app) return false
