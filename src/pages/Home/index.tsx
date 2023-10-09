@@ -24,21 +24,25 @@ function HomePage() {
   const messages = [
     {
       message: 'E ai cara, beleza?',
-      time: moment(),
+      time: +moment().add(-1, 'day'),
     },
     {
       message: 'E ai, estou bem e você?',
-      time: moment().add('minute', 1),
+      time: +moment().add(-1, 'day').add(1, 'minute'),
       right: true,
     },
     {
       message: 'legal, tbm tô bem, e as novidades?',
-      time: moment().add('minute', 31),
+      time: +moment().add(-1, 'day').add(31, 'minute'),
     },
     {
       message: 'comprei um carro novo',
-      time: moment().add('day', 1),
+      time: +moment(),
       right: true,
+    },
+    {
+      message: 'legal demais, sei o quanto você queria isso',
+      time: +moment().add(1, 'day').add(1, 'minute'),
     },
   ]
 

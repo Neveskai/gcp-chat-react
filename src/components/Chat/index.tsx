@@ -1,23 +1,59 @@
 import React from 'react'
-import { Moment } from 'moment'
+import moment from 'moment'
+import Button from '@/components/Button'
 import Message from './components/Message'
 import ChatAvatar from './components/Avatar'
 
 import { Box, Container, List, Paper, TextField, Typography } from '@mui/material'
 import { listCSS, mainCSS, sendCSS } from './css'
 
+import SendIcon from '@mui/icons-material/Send'
+
+type MessageType = {
+  message: string
+  time: number
+  right?: boolean
+}
+
 type ChatProps = {
-  messages: {
-    message: string
-    time: Moment
-    right?: boolean
-  }[]
+  messages: MessageType[]
+}
+
+const today = moment().format('DD/MM/YYYY')
+const yesterday = moment().add(-1, 'day').format('DD/MM/YYYY')
+
+const getParsedMessages = (messages: MessageType[]) =>
+  messages.reduce((res: any, message: MessageType) => {
+    const pKey = moment(message.time).format('DD/MM/YYYY')
+
+    if (!res[pKey]) res[pKey] = []
+
+    res[pKey].push(message)
+
+    return res
+  }, {})
+
+const getDayName = (date: string) => {
+  if (date === today) return 'today'
+  if (date === yesterday) return 'yesterday'
+
+  return date
 }
 
 function Chat({ messages }: ChatProps) {
   const [message, setMessage] = React.useState('')
 
-  const parsedMessages = { hoje: messages }
+  const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
+
+  const sendMessage = () => {
+    console.log(message)
+
+    setMessage('')
+  }
+
+  const handleKeys = (e: any) => {
+    if (e.key === 'Enter') return sendMessage()
+  }
 
   return (
     <Container>
@@ -31,17 +67,30 @@ function Chat({ messages }: ChatProps) {
                 component='h6'
                 sx={{ width: '100%', textAlign: 'center', textTransform: 'capitalize' }}
               >
-                {key as string}
+                {getDayName(key)}
               </Typography>
-              {parsedMessages[key as keyof typeof parsedMessages].map((msg) => (
-                <Message {...msg} time={msg.time.format('hh:mm')} key={msg.time.format()} />
+
+              {parsedMessages[key as keyof typeof parsedMessages].map((message: MessageType) => (
+                <Message
+                  {...message}
+                  time={moment(message.time).format('hh:mm')}
+                  key={message.time}
+                />
               ))}
             </div>
           ))}
         </List>
 
         <Box sx={sendCSS}>
-          <TextField fullWidth value={message} onChange={(e: any) => setMessage(e.target.value)} />
+          <TextField
+            fullWidth
+            value={message}
+            onChange={(e: any) => setMessage(e.target.value)}
+            onKeyUp={handleKeys}
+          />
+          <Button variant='contained' disabled={!message} onClick={sendMessage}>
+            <SendIcon />
+          </Button>
         </Box>
       </Box>
     </Container>
