@@ -5,6 +5,8 @@ export type MessageType = {
   message: string
   time: number
   owner: string
+  type?: string
+  shortPath?: string
 }
 
 class FirestoreDoc {
@@ -30,6 +32,20 @@ class FirestoreDoc {
           time: +moment(),
           owner: this.owner,
           message: message,
+        },
+      ],
+    })
+  }
+
+  async sendAudio(shortPath: string) {
+    return this.firestore.setDoc(this.doc, {
+      messages: [
+        ...this.messages,
+        {
+          time: +moment(),
+          owner: this.owner,
+          shortPath: shortPath,
+          type: 'audio',
         },
       ],
     })

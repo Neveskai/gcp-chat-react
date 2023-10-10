@@ -9,6 +9,7 @@ import Button from '@/components/Button'
 
 import './index.css'
 import React from 'react'
+import { audioBox } from './css'
 
 const formatTime = (time: number) => {
   let seconds = Math.floor(time)
@@ -21,15 +22,14 @@ const formatTime = (time: number) => {
   return `${minutes}:${(seconds % 60).toString().padStart(2, '0')}`
 }
 
-function AudioRecorder() {
+function AudioRecorder({ onRecordComplete }: { onRecordComplete: (b: Blob) => void }) {
   const recorderControls = useAudioRecorder()
   const [canceled, setCanceled] = React.useState(false)
 
-  const onRecordComplete = (blob: Blob) => {
+  const handleRecordComplete = (blob: Blob) => {
     if (canceled) return setCanceled(false)
 
-    console.log(blob)
-    return blob
+    return onRecordComplete(blob)
   }
 
   const onRecordCancel = () => {
@@ -44,7 +44,7 @@ function AudioRecorder() {
   return (
     <Box sx={{ display: 'flex' }}>
       <AudioRecord
-        onRecordingComplete={onRecordComplete}
+        onRecordingComplete={handleRecordComplete}
         recorderControls={recorderControls}
         audioTrackConstraints={{
           noiseSuppression: true,
@@ -61,16 +61,7 @@ function AudioRecorder() {
       )}
 
       {isRecording && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '4px',
-            border: '1px solid #c6c6c6',
-            borderRadius: '4px',
-          }}
-        >
+        <Box sx={audioBox}>
           <Button onClick={onRecordCancel}>
             <DeleteIcon />
           </Button>

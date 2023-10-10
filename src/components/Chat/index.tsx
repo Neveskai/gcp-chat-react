@@ -6,6 +6,7 @@ import ChatAvatar from './components/Avatar'
 import { Box, Container, List, Paper, Typography } from '@mui/material'
 import { listCSS, mainCSS } from './css'
 
+import Storage from '@/modules/firebase/storage'
 import FirestoreDoc, { MessageType } from '@/modules/firebase/firestoreDoc'
 import SendMessage from './components/SendMessage'
 
@@ -38,6 +39,7 @@ const getDayName = (date: string) => {
 function Chat({ doc, owner }: ChatProps) {
   const [messages, setMessages] = React.useState([])
   const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc, owner), [])
+  const storage = React.useMemo(() => new Storage(), [])
   const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
 
   React.useEffect(() => {
@@ -60,18 +62,13 @@ function Chat({ doc, owner }: ChatProps) {
               </Typography>
 
               {parsedMessages[key as keyof typeof parsedMessages].map((msg: MessageType) => (
-                <Message
-                  message={msg.message}
-                  right={msg.owner !== owner}
-                  time={moment(msg.time).format('hh:mm')}
-                  key={msg.time}
-                />
+                <Message msg={msg} storage={storage} right={msg.owner !== owner} key={msg.time} />
               ))}
             </div>
           ))}
         </List>
 
-        <SendMessage firestore={firestore} />
+        <SendMessage firestore={firestore} storage={storage} doc={doc} />
       </Box>
     </Container>
   )

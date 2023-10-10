@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check'
 import { getFirestore } from 'firebase/firestore'
-import { FirebaseStorage, getStorage } from 'firebase/storage'
+import { getStorage } from 'firebase/storage'
 import { getAnalytics } from 'firebase/analytics'
 import { getAuth, User } from 'firebase/auth'
 import { FirebaseApp } from 'firebase/app'
@@ -26,7 +26,7 @@ class FirebaseAdapter {
 
   auth: any
 
-  storage: FirebaseStorage | undefined
+  storage: any
 
   analytics: any
 
@@ -50,7 +50,7 @@ class FirebaseAdapter {
       this.auth.onAuthStateChanged((fbUser: User) => {
         if (!fbUser || !this.app) return false
 
-        this.storage = getStorage()
+        this.storage = getStorage(this.app)
         this.analytics = getAnalytics(this.app)
         this.firestore = getFirestore(this.app)
 

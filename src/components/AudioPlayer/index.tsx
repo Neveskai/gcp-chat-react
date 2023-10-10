@@ -1,11 +1,10 @@
 import { Box } from '@mui/material'
 
-function AudioPlayer() {
+function AudioPlayer({ src }: { src: string }) {
   return (
     <Box>
       <audio controls>
-        <source src='horse.ogg' type='audio/ogg' />
-        <source src='horse.mp3' type='audio/mpeg' />
+        <source src={src} type='audio' />
         Your browser does not support the audio element.
       </audio>
     </Box>
