@@ -1,14 +1,16 @@
 import React from 'react'
+import moment from 'moment'
 import Button from '@/components/Button'
+import { Box, TextField } from '@mui/material'
+
 import SendIcon from '@mui/icons-material/Send'
 import ClipIcon from '@mui/icons-material/AttachFile'
-import type FirestoreDoc from '@/modules/firebase/firestoreDoc'
-
-import { Box, TextField } from '@mui/material'
-import { sendCSS } from '../../css'
 import AudioRecorder from '@/components/AudioRecorder'
-import moment from 'moment'
+
+import type FirestoreDoc from '@/modules/firebase/firestoreDoc'
 import type { Storage } from '@/modules/firebase/storage'
+import { sendCSS } from '../../css'
+import { uuid } from '@/utils/uuid'
 
 type SendMessageProps = {
   firestore: FirestoreDoc
@@ -18,18 +20,32 @@ type SendMessageProps = {
 
 function SendMessage({ firestore, storage, doc }: SendMessageProps) {
   const [message, setMessage] = React.useState('')
+  const [attach, setAttach] = React.useState<File | null>(null)
+  const inputID = React.useMemo(() => uuid(40), [])
 
   const sendMessage = async () => {
-    await firestore.sendMessage(message)
+    const ext = attach?.name.split('.').pop() || ''
+    const folder = ext === 'pdf' ? 'doc' : 'photo'
+    const type = ext === 'pdf' ? 'pdf' : 'image'
+
+    const shortPath = attach ? await handleUpdateFile(attach, folder, ext) : ''
+    await firestore.sendMessage(message, { shortPath, type })
 
     setMessage('')
+    setAttach(null)
+  }
+
+  const handleUpdateFile = async (file: Blob | File, folder: string, ext: string) => {
+    const fileName = (+moment()).toString()
+    const shortPath = `${doc}/${folder}/${fileName}.${ext}`
+
+    await storage.uploadFile(shortPath, file)
+
+    return shortPath
   }
 
   const onRecordComplete = async (file: Blob | File) => {
-    const fileName = (+moment()).toString()
-    const shortPath = `${doc}/audio/${fileName}.mp3`
-
-    await storage.uploadFile(shortPath, file)
+    const shortPath = await handleUpdateFile(file, 'audio', 'mp3')
     await firestore.sendAudio(shortPath)
   }
 
@@ -39,8 +55,14 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
 
   return (
     <Box sx={sendCSS}>
-      <Button variant='outlined'>
-        <ClipIcon />
+      <Button variant={!attach ? 'outlined' : 'contained'}>
+        <input
+          type='file'
+          id={inputID}
+          style={{ display: 'none' }}
+          onChange={(e: any) => setAttach(e.target.files[0])}
+        />
+        <ClipIcon onClick={() => document.getElementById(inputID)?.click()} />
       </Button>
 
       <TextField

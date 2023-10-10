@@ -1,10 +1,13 @@
 import AudioPlayer from '@/components/AudioPlayer'
 import { MessageType } from '@/modules/firebase/firestoreDoc'
 import type Storage from '@/modules/firebase/storage'
+
 import { ListItem, ListItemText, Paper } from '@mui/material'
 import moment from 'moment'
 import React from 'react'
 import './index.css'
+import ImageViewer from '@/components/ImageViewer'
+import PDFViewer from '@/components/PDFViewer'
 
 type MessageProps = {
   msg: MessageType
@@ -20,6 +23,8 @@ function Message({ msg, right, storage }: MessageProps) {
   const type = msg?.type || 'text'
   const shortPath = msg?.shortPath || null
   const audioType = type === 'audio' && shortPath
+  const imageType = type === 'image' && shortPath
+  const pdfType = type === 'pdf' && shortPath
 
   const align = { textAlign: right ? 'right' : 'left', fontSize: '20px' }
   const spacing = {
@@ -34,16 +39,24 @@ function Message({ msg, right, storage }: MessageProps) {
   }
 
   React.useEffect(() => {
-    if (shortPath) storage.getFile(shortPath).then((audioFile) => setFile(audioFile))
+    if (shortPath) storage.getFile(shortPath).then((blob) => setFile(blob))
   }, [shortPath])
 
   return (
     <ListItem key={time}>
       <Paper sx={spacing}>
-        <ListItemText
-          primary={audioType && file ? <AudioPlayer audio={file} /> : message}
-          sx={align}
-        />
+        {!audioType && !imageType && !pdfType && <ListItemText primary={message} sx={align} />}
+
+        {audioType && file && <ListItemText primary={<AudioPlayer src={file} />} sx={align} />}
+
+        {imageType && file && (
+          <ListItemText primary={<ImageViewer src={file} msg={message} />} sx={align} />
+        )}
+
+        {pdfType && file && (
+          <ListItemText primary={<PDFViewer src={file} msg={message} />} sx={align} />
+        )}
+
         <ListItemText secondary={time} sx={align} />
       </Paper>
     </ListItem>
