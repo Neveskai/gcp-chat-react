@@ -26,7 +26,8 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
   }
 
   const onRecordComplete = async (file: Blob | File) => {
-    const shortPath = `${doc}/audio/${+moment().toString()}.mp3`
+    const fileName = (+moment()).toString()
+    const shortPath = `${doc}/audio/${fileName}.mp3`
 
     await storage.uploadFile(shortPath, file)
     await firestore.sendAudio(shortPath)

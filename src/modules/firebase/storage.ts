@@ -25,6 +25,15 @@ export class Storage {
 
     return url
   }
+
+  getFile = async (shortPath: string) => {
+    const url = await this.getDownloadURL(shortPath)
+
+    const res = await fetch(url)
+    const blob = await res.blob()
+
+    return blob
+  }
 }
 
 export default Storage

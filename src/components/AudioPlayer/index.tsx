@@ -1,13 +1,13 @@
-import { Box } from '@mui/material'
+import React from 'react'
 
-function AudioPlayer({ src }: { src: string }) {
+function AudioPlayer({ audio }: { audio: Blob }) {
+  const url = React.useMemo(() => URL.createObjectURL(audio), [audio])
+
   return (
-    <Box>
-      <audio controls>
-        <source src={src} type='audio' />
-        Your browser does not support the audio element.
-      </audio>
-    </Box>
+    <audio controls>
+      <source src={url} type='audio/mpeg' />
+      Your browser does not support the audio element.
+    </audio>
   )
 }
 
