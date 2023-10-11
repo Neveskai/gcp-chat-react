@@ -19,6 +19,7 @@ type SendMessageProps = {
 }
 
 function SendMessage({ firestore, storage, doc }: SendMessageProps) {
+  const [sending, setSending] = React.useState(false)
   const [message, setMessage] = React.useState('')
   const [sendAsClient, setSendAsClient] = React.useState<boolean>(false)
 
@@ -26,6 +27,8 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
   const inputID = React.useMemo(() => uuid(40), [])
 
   const sendMessage = async () => {
+    setSending(true)
+
     const ext = attach?.name.split('.').pop() || ''
     const folder = ext === 'pdf' ? 'doc' : 'photo'
     const type = ext === 'pdf' ? 'pdf' : 'image'
@@ -36,8 +39,22 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
       ? await firestore.sendMessageAsClient(message, { shortPath, type })
       : await firestore.sendMessage(message, { shortPath, type })
 
-    setMessage('')
     setAttach(null)
+    setMessage('')
+
+    setSending(false)
+  }
+
+  const onRecordComplete = async (file: Blob | File) => {
+    setSending(true)
+
+    const shortPath = await handleUpdateFile(file, 'audio', 'mp3')
+
+    sendAsClient
+      ? await firestore.sendAudioAsClient(shortPath)
+      : await firestore.sendAudio(shortPath)
+
+    setSending(false)
   }
 
   const handleUpdateFile = async (file: Blob | File, folder: string, ext: string) => {
@@ -49,14 +66,6 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
     setAttach(null)
 
     return shortPath
-  }
-
-  const onRecordComplete = async (file: Blob | File) => {
-    const shortPath = await handleUpdateFile(file, 'audio', 'mp3')
-
-    sendAsClient
-      ? await firestore.sendAudioAsClient(shortPath)
-      : await firestore.sendAudio(shortPath)
   }
 
   const handleKeys = (e: any) => {
@@ -101,7 +110,11 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
         />
 
         {(!!message || attach) && (
-          <Button variant='outlined' disabled={!(message || attach)} onClick={sendMessage}>
+          <Button
+            variant='outlined'
+            disabled={!(message || attach) || sending}
+            onClick={sendMessage}
+          >
             <SendIcon />
           </Button>
         )}
