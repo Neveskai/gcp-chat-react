@@ -19,11 +19,11 @@ type SendMessageProps = {
 }
 
 function SendMessage({ firestore, storage, doc }: SendMessageProps) {
+  const [attach, setAttach] = React.useState<File | null>(null)
   const [sending, setSending] = React.useState(false)
   const [message, setMessage] = React.useState('')
   const [sendAsClient, setSendAsClient] = React.useState<boolean>(false)
 
-  const [attach, setAttach] = React.useState<File | null>(null)
   const inputID = React.useMemo(() => uuid(40), [])
 
   const sendMessage = async () => {

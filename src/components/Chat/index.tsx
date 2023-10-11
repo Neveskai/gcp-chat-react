@@ -37,18 +37,27 @@ const getDayName = (date: string) => {
   return date
 }
 
+export const scrollMessages = (id: string) => {
+  const chatArea = document.querySelector(`#${id}`) as HTMLElement
+
+  if (chatArea) return chatArea.scrollTo({ behavior: 'smooth', top: chatArea.scrollHeight })
+}
+
 function Chat({ doc, owner }: ChatProps) {
   const [messages, setMessages] = React.useState([])
 
   const parsedMessages = React.useMemo(() => getParsedMessages(messages), [messages])
   const firestore = React.useMemo(() => new FirestoreDoc('owner-client-chat', doc, owner), [])
   const storage = React.useMemo(() => new Storage(), [])
-
   const listID = React.useMemo(() => uuid(40), [])
 
   React.useEffect(() => {
     firestore.getDocSnapshot(setMessages)
   }, [])
+
+  React.useEffect(() => {
+    scrollMessages(listID)
+  }, [messages])
 
   return (
     <Box sx={mainCSS} component={Paper}>
