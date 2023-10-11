@@ -3,10 +3,10 @@ import { saveAs } from 'file-saver'
 import { Box } from '@mui/material'
 import './index.css'
 
-function ImageViewer({ src, msg }: { src: Blob; msg: string }) {
-  const url = React.useMemo(() => URL.createObjectURL(src), [src])
+function ImageViewer({ src, msg }: { src: Blob | null; msg: string }) {
+  const url = React.useMemo(() => (src ? URL.createObjectURL(src) : ''), [src])
 
-  const handleSave = () => saveAs(src, 'doc.pdf')
+  const handleSave = () => (src ? saveAs(src, 'doc.pdf') : false)
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>

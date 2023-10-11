@@ -47,15 +47,13 @@ function Message({ msg, right, storage }: MessageProps) {
       <Paper sx={spacing}>
         {!audioType && !imageType && !pdfType && <ListItemText primary={message} sx={align} />}
 
-        {audioType && file && <ListItemText primary={<AudioPlayer src={file} />} sx={align} />}
+        {audioType && <ListItemText primary={<AudioPlayer src={file} />} sx={align} />}
 
-        {imageType && file && (
+        {imageType && (
           <ListItemText primary={<ImageViewer src={file} msg={message} />} sx={align} />
         )}
 
-        {pdfType && file && (
-          <ListItemText primary={<PDFViewer src={file} msg={message} />} sx={align} />
-        )}
+        {pdfType && <ListItemText primary={<PDFViewer src={file} msg={message} />} sx={align} />}
 
         <ListItemText secondary={time} sx={align} />
       </Paper>

@@ -1,7 +1,9 @@
 import React from 'react'
 
-function AudioPlayer({ src }: { src: Blob }) {
-  const url = React.useMemo(() => URL.createObjectURL(src), [src])
+function AudioPlayer({ src }: { src: Blob | null }) {
+  const url = React.useMemo(() => (src ? URL.createObjectURL(src) : ''), [src])
+
+  if (!src) return <audio />
 
   return (
     <audio controls>
