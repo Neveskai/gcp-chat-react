@@ -37,7 +37,7 @@ const getDayName = (date: string) => {
   return date
 }
 
-export const scrollMessages = (id: string) => {
+const scrollMessages = (id: string) => {
   const chatArea = document.querySelector(`#${id}`) as HTMLElement
 
   if (chatArea) return chatArea.scrollTo({ behavior: 'smooth', top: chatArea.scrollHeight })
