@@ -20,6 +20,8 @@ type SendMessageProps = {
 
 function SendMessage({ firestore, storage, doc }: SendMessageProps) {
   const [message, setMessage] = React.useState('')
+  const [sendAsClient, setSendAsClient] = React.useState<boolean>(false)
+
   const [attach, setAttach] = React.useState<File | null>(null)
   const inputID = React.useMemo(() => uuid(40), [])
 
@@ -29,7 +31,10 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
     const type = ext === 'pdf' ? 'pdf' : 'image'
 
     const shortPath = attach ? await handleUpdateFile(attach, folder, ext) : ''
-    await firestore.sendMessage(message, { shortPath, type })
+
+    sendAsClient
+      ? await firestore.sendMessageAsClient(message, { shortPath, type })
+      : await firestore.sendMessage(message, { shortPath, type })
 
     setMessage('')
     setAttach(null)
@@ -41,44 +46,68 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
 
     await storage.uploadFile(shortPath, file)
 
+    setAttach(null)
+
     return shortPath
   }
 
   const onRecordComplete = async (file: Blob | File) => {
     const shortPath = await handleUpdateFile(file, 'audio', 'mp3')
-    await firestore.sendAudio(shortPath)
+
+    sendAsClient
+      ? await firestore.sendAudioAsClient(shortPath)
+      : await firestore.sendAudio(shortPath)
   }
 
   const handleKeys = (e: any) => {
     if (e.key === 'Enter') return sendMessage()
   }
 
+  const handleSwitch = () => {
+    setSendAsClient(!sendAsClient)
+  }
+
   return (
-    <Box sx={sendCSS}>
-      <Button variant={!attach ? 'outlined' : 'contained'}>
-        <input
-          type='file'
-          id={inputID}
-          style={{ display: 'none' }}
-          onChange={(e: any) => setAttach(e.target.files[0])}
-        />
-        <ClipIcon onClick={() => document.getElementById(inputID)?.click()} />
-      </Button>
-
-      <TextField
-        fullWidth
-        value={message}
-        onChange={(e: any) => setMessage(e.target.value)}
-        onKeyUp={handleKeys}
-      />
-
-      {!!message && (
-        <Button variant='outlined' disabled={!message} onClick={sendMessage}>
-          <SendIcon />
+    <Box sx={{ padding: '10px 14px' }}>
+      <Box sx={{ paddingBottom: '5px', display: 'flex', gap: '5px' }}>
+        <Button
+          variant={!sendAsClient ? 'outlined' : 'contained'}
+          onClick={handleSwitch}
+          sx={{ fontSize: '13px', lineHeight: 1.5 }}
+        >
+          Enviar como resposta
         </Button>
-      )}
 
-      {!message && <AudioRecorder onRecordComplete={onRecordComplete} />}
+        <Button variant={!attach ? 'outlined' : 'contained'}>
+          <input
+            type='file'
+            id={inputID}
+            style={{ display: 'none' }}
+            onChange={(e: any) => setAttach(e.target.files[0])}
+          />
+          <ClipIcon
+            sx={{ fontSize: '19.5px' }}
+            onClick={() => document.getElementById(inputID)?.click()}
+          />
+        </Button>
+      </Box>
+
+      <Box sx={sendCSS}>
+        <TextField
+          fullWidth
+          value={message}
+          onChange={(e: any) => setMessage(e.target.value)}
+          onKeyUp={handleKeys}
+        />
+
+        {(!!message || attach) && (
+          <Button variant='outlined' disabled={!(message || attach)} onClick={sendMessage}>
+            <SendIcon />
+          </Button>
+        )}
+
+        {!message && !attach && <AudioRecorder onRecordComplete={onRecordComplete} />}
+      </Box>
     </Box>
   )
 }

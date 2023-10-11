@@ -38,7 +38,7 @@ class FirebaseAdapter {
     })
   }
 
-  initFirestore = async (resolve: (user: User) => void) => {
+  initFirestore = async (resolve: (user: User | null) => void) => {
     try {
       this.app = initializeApp(firebaseConfig)
       this.auth = getAuth(this.app)
@@ -48,7 +48,7 @@ class FirebaseAdapter {
       })
 
       this.auth.onAuthStateChanged((fbUser: User) => {
-        if (!fbUser || !this.app) return false
+        if (!fbUser || !this.app) return resolve(null)
 
         this.storage = getStorage(this.app)
         this.analytics = getAnalytics(this.app)

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Container } from '@mui/material'
+import { Box } from '@mui/material'
 
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import Button from '@/components/Button'
@@ -21,7 +21,7 @@ function HomePage() {
   }
 
   return (
-    <Container>
+    <Box>
       <Box sx={boxCSS}>
         Bem vindo <b>{user.user?.displayName || user.user?.email}</b>
         <Box sx={{ mt: 2 }}>
@@ -31,11 +31,10 @@ function HomePage() {
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: '100%' }}>
         <Chat doc={user?.user?.email as string} owner={user?.user?.email as string} />
-        <Chat doc={user?.user?.email as string} owner='Client' />
       </Box>
-    </Container>
+    </Box>
   )
 }
 

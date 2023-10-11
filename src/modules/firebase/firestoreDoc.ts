@@ -61,6 +61,37 @@ class FirestoreDoc {
 
     return unsub
   }
+
+  // Demo Methods
+  async sendMessageAsClient(message: string, file?: { shortPath?: string; type: string }) {
+    return this.firestore.setDoc(this.doc, {
+      messages: [
+        ...this.messages,
+        {
+          time: +moment(),
+          owner: 'Client',
+          shortPath: file?.shortPath || '',
+          type: file?.type ? file.type : 'text',
+          message: message,
+        },
+      ],
+    })
+  }
+
+  // Demo Methods
+  async sendAudioAsClient(shortPath: string) {
+    return this.firestore.setDoc(this.doc, {
+      messages: [
+        ...this.messages,
+        {
+          time: +moment(),
+          owner: 'Client',
+          shortPath: shortPath,
+          type: 'audio',
+        },
+      ],
+    })
+  }
 }
 
 export default FirestoreDoc
