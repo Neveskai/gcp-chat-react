@@ -87,17 +87,17 @@ function SendMessage({ firestore, storage, doc }: SendMessageProps) {
           Enviar como resposta
         </Button>
 
-        <Button variant={!attach ? 'outlined' : 'contained'}>
+        <Button
+          variant={!attach ? 'outlined' : 'contained'}
+          onClick={() => document.getElementById(inputID)?.click()}
+        >
           <input
             type='file'
             id={inputID}
             style={{ display: 'none' }}
             onChange={(e: any) => setAttach(e.target.files[0])}
           />
-          <ClipIcon
-            sx={{ fontSize: '19.5px' }}
-            onClick={() => document.getElementById(inputID)?.click()}
-          />
+          <ClipIcon sx={{ fontSize: '19.5px' }} />
         </Button>
       </Box>
 
